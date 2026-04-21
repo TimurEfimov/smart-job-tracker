@@ -1,9 +1,10 @@
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+from app.db.models import JobStatus
 
 class JobCreateRequest(BaseModel):
     title: str = Field(..., max_length=128)
     company: str = Field(..., max_length=128)
-    status: str = Field(..., pattern="^(applied|interviewing|offered|rejected)$")
+    status: JobStatus = JobStatus.APPLIED
 
     @field_validator("title")
     def title_not_empty(cls, v: str) -> str:
@@ -21,3 +22,6 @@ class JobCreateRequest(BaseModel):
             raise ValueError("Company must not be empty")
         return v
     
+class JobResponse(JobCreateRequest):
+    id: int
+    model_config = ConfigDict(from_attributes=True)

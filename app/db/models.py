@@ -1,16 +1,16 @@
 from datetime import datetime
-import enum
+from enum import StrEnum, auto
 
 from sqlalchemy import Enum, ForeignKey, String, func
 
 from app.db.database import Base
 from sqlalchemy.orm import Mapped, mapped_column
 
-class JobStatus(enum.Enum):
-    APPLIED = "applied"
-    INTERVIEWING = "interviewing"
-    OFFERED = "offered"
-    REJECTED = "rejected"
+class JobStatus(StrEnum):
+    APPLIED = auto()
+    INTERVIEWING = auto()
+    OFFERED = auto()
+    REJECTED = auto()
 
 
 class Job(Base):
