@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from app.auth.utils import decode_token
 from app.db.database import SessionLocal
 from app.repository import user_repository
 from app.schemas.user import UserResponse
@@ -21,7 +22,17 @@ def get_db() -> Generator[Session, None, None]:
 
 def get_current_user(credentails: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)) ->   UserResponse:
     token = credentails.credentials
-    user = user_repository.get_user_by_token(db, token)
+    payload = decode_token(token)
+
+    if payload is None:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    user_id = payload.get("sub")
+
+    if user_id is None:
+        raise HTTPException(status_code=401, detail="Invalid token payload")
+
+    user = user_repository.get_user_by_id(db, int(user_id))
     if not user:
-        raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-    return UserResponse.model_validate(user)
+        raise HTTPException(status_code=401, detail="User not found")
+    return user

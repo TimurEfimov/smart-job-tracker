@@ -32,3 +32,6 @@ def filter_jobs(db: Session, user_id: int, company: str | None = None, status: s
 
     jobs = query.all()
     return jobs
+
+# def delete_all_jobs(db: Session, user_id: int) -> None:
+#     db.query(Job).filter(Job.user_id == user_id).delete()
