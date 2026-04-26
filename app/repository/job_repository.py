@@ -21,7 +21,19 @@ def delete_job(db: Session, user_id: int, job_id: int) -> None:
     if job:
         db.delete(job)
 
-def filter_jobs(db: Session, user_id: int, company: str | None = None, status: str | None = None) -> List[Job]:
+def filter_jobs(db: Session, company: str | None = None, status: str | None = None) -> List[Job]:
+    query = db.query(Job)
+
+    if company is not None:
+        query = query.filter(Job.company.ilike(f"%{company}%"))
+
+    if status is not None:
+        query = query.filter(Job.status == status)
+
+    jobs = query.all()
+    return jobs
+
+def filter_my_jobs(db: Session, user_id: int, company: str | None = None, status: str | None = None) -> List[Job]:
     query = db.query(Job).filter(Job.user_id == user_id)
 
     if company is not None:

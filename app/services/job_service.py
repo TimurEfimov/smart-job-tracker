@@ -1,7 +1,8 @@
+from typing import List
+
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from app.db.models import User
 from app.repository import job_repository
 from app.schemas.job import JobCreateRequest, JobResponse
 
@@ -29,8 +30,18 @@ def delete_job(db: Session, user_id: int, job_id: int):
         "detail": f"Job {job_id} deleted successfully"
     }
 
-def filter_jobs(db: Session, user_id: int, company: str | None = None, status: str | None = None) -> list[JobResponse]:
-    jobs = job_repository.filter_jobs(db, user_id, company, status)
+def filter_jobs(db: Session, company: str | None = None, status: str | None = None) -> List[JobResponse]:
+    jobs = job_repository.filter_jobs(db, company, status)
+    if not jobs:
+        raise HTTPException(status_code=404, detail="No jobs found for the specified filters")
+
+    return [
+        JobResponse.model_validate(job)
+        for job in jobs
+    ]
+
+def filter_my_jobs(db: Session, user_id: int, company: str | None = None, status: str | None = None) -> list[JobResponse]:
+    jobs = job_repository.filter_my_jobs(db, user_id, company, status)
     if not jobs:
         raise HTTPException(status_code=404, detail="No jobs found for the specified filters")
 

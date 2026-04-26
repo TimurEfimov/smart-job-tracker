@@ -9,8 +9,12 @@ from app.schemas.job import JobCreateRequest, JobResponse
 router = APIRouter()
 
 @router.get("/jobs", response_model=list[JobResponse])
-def get_jobs(company: str | None = None, status: str | None = None, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
-    return job_service.filter_jobs(db, current_user.id, company, status)
+def get_jobs(company: str | None = None, status: str | None = None, db: Session = Depends(get_db)):
+    return job_service.filter_jobs(db, company, status)
+
+@router.get("/jobs/my", response_model=list[JobResponse])
+def get_my_jobs(company: str | None = None, status: str | None = None, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    return job_service.filter_my_jobs(db, current_user.id, company, status)
 
 @router.get("/jobs/{job_id}", response_model=JobResponse)
 def get_job_by_id(job_id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
