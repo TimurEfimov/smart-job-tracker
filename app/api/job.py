@@ -24,6 +24,10 @@ def get_job_by_id(job_id: int, db: Session = Depends(get_db), current_user = Dep
 def create_job(job: JobCreateRequest, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     return job_service.create_job(db, current_user.id, job)
 
-@router.delete("/jobs/{job_id}")
+@router.delete("/jobs/{job_id}") 
 def delete_job(job_id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     return job_service.delete_job(db, current_user.id, job_id)
+
+@router.patch("/jobs/{job_id}/status", response_model=JobResponse)
+def update_status_job(job_id: int, status: str, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    return job_service.update_status_job(db, current_user.id, job_id, status)

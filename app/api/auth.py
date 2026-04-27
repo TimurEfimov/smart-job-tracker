@@ -5,6 +5,7 @@ from fastapi import APIRouter
 
 from app.auth.service import login_user
 from app.db.dependency import get_db
+from app.schemas.user import UserResponse
 
 
 router = APIRouter()

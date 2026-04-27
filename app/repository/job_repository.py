@@ -45,5 +45,12 @@ def filter_my_jobs(db: Session, user_id: int, company: str | None = None, status
     jobs = query.all()
     return jobs
 
+def update_status_job(db: Session, user_id: int, job_id: int, status: JobStatus) -> Job | None:
+    job = db.query(Job).filter(Job.id == job_id, Job.user_id == user_id).first()
+    if job:
+        job.status = status
+        db.flush()
+    return job
+
 # def delete_all_jobs(db: Session, user_id: int) -> None:
 #     db.query(Job).filter(Job.user_id == user_id).delete()

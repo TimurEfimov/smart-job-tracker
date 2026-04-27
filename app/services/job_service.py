@@ -49,3 +49,11 @@ def filter_my_jobs(db: Session, user_id: int, company: str | None = None, status
         JobResponse.model_validate(job)
         for job in jobs
     ]
+
+def update_status_job(db: Session, user_id: int, job_id: int, status: str) -> JobResponse:
+    if not job_repository.is_job_exists(db, user_id, job_id):
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    job = job_repository.update_status_job(db, user_id, job_id, status)
+    db.commit()
+    return JobResponse.model_validate(job)
